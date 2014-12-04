@@ -40,8 +40,8 @@ interp (App t u) e = do
 look_up :: (Monad m) => Name -> Environment -> m Value
 look_up x [] = return Wrong
 look_up x ((y,b):e) = if x == y
-						 then return b
-						 else look_up x e
+					  then return b
+					  else look_up x e
 
 add :: (Monad m) => Value -> Value -> m Value
 add (Num i) (Num j) = return (Num (i + j))
@@ -52,6 +52,6 @@ apply (Fun k) a = k a
 apply _ a = return Wrong
 
 cat :: (Monad m) => Value -> Value -> m Value
-cat (Str s1) (Str s2) = return (s1 ++ s2)
+cat (Str s1) (Str s2) = return (Str (s1 ++ s2))
 cat _ _ = return Wrong
 
