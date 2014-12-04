@@ -6,13 +6,13 @@ data Term = Var Name
 		  | ConI Int
 		  | ConS String
 		  | Add Term Term
-		  | Lam Term Term
+		  | Lam Name Term
 		  | App Term Term
 
-data Monad m => Value = Wrong
-		   			  | Num Int
-		   			  | Str String
-		   			  | Fun (Value -> Value)
+data Value = Wrong
+		   | Num Int
+		   | Str String
+		   | Fun (Value -> Value)--should eventually be like V -> m V
 
 type Environment = [(Name, Value)]
 
@@ -30,15 +30,12 @@ interp (Add u v) e = do
 					 a <- interp u e
 					 b <- interp v e
 					 add a b
-interp (Cat u v) e = do
-					 s1 <- interp u e
-					 s2 <- interp v e
-					 cat u v
 interp (Lam x v) e = return (Fun (\a -> interp v ((x,a):e)))
 interp (App t u) e = do
 					 f <- interp t e
 					 a <- interp u e
 					 apply f a
+--I don't think we interp Cat, I think we apply cat
 
 look_up :: (Monad m) => Name -> Environment -> m Value
 look_up x [] = return Wrong
