@@ -18,6 +18,10 @@ type Environment = [(Name, Value)]
 
 data E a = Success a | Error String deriving Show
 
+instance Functor E where
+	fmap f (Error s) = Error s
+	fmap f (Success a) = Success (f a)
+
 instance Monad E where
 	return a = Success a
 	Success a >>= f = f a
