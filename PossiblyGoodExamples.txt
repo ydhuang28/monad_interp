@@ -1,0 +1,8 @@
+Possibly good examples
+
+*CoreInterp> apply (Fun (add (Num 5))) (Num 3)
+Success 8
+*CoreInterp> interp (Cat (ConS "Hello, ") (ConS "World!")) []
+Success "Hello, World!"
+*CoreInterp> interp (Cat (ConL [(Num 5), (Num 3)]) (ConL [(Num 1), (Num 2)])) [] 
+Success [5,3,1,2]
