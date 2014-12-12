@@ -6,3 +6,5 @@ Success 8
 Success "Hello, World!"
 *CoreInterp> interp (Cat (ConL [(Num 5), (Num 3)]) (ConL [(Num 1), (Num 2)])) [] 
 Success [5,3,1,2]
+*CoreInterp> interp (Var "me") [("me", (Num 21))]
+Success 21
