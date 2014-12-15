@@ -1,9 +1,10 @@
 module CoreInterp where
 
 import Control.Monad.Reader
+import ErrorMonad
+--import PositionMonad
 
 type Name = String
-type Position = Int
 
 data Term = Var Name
 		  | ConI Int
@@ -14,13 +15,13 @@ data Term = Var Name
 		  | Cat Term Term
 		  | Lam Name Term
 		  | App Term Term
-		  | At Position Term
+--		  | At Position Term
 
 data Value = Num Int
 		   | Str String
 		   | Ch Char
 		   | List [Value]
-		   | Fun (Value -> E Value)--should eventually be like V -> m V
+		   | Fun (Value -> E Value) -- should eventually be like V -> m V
 
 instance Show Value where
 	show (Num n) = show n
@@ -30,27 +31,6 @@ instance Show Value where
 	show (Fun f) = "<function>"
 
 type Environment = [(Name, Value)]
-
---data Reader a = Read (Position -> E a)
-
---instance Functor Reader where
-	--fmap f (Read(g p)) = Read 
-
---instance Monad Reader where
-	--return val = \p -> (return val)
-
-data E a = Success a | Error String deriving Show
-
-instance Functor E where
-	fmap f (Error s) = Error s
-	fmap f (Success a) = Success (f a)
-
-instance Monad E where
-	return a = Success a
-	Success a >>= f = f a
-	Error s >>= f = Error s
-
-errorE s = Error s
 
 interp :: Term -> Environment -> E Value
 interp (Var x) e = look_up x e
