@@ -8,3 +8,20 @@ Success "Hello, World!"
 Success [5,3,1,2]
 *CoreInterp> interp (Var "me") [("me", (Num 21))]
 Success 21
+
+interp (Cat (ConL [do{x<-interp (Var "me") [("me", (Num 21))]; x}, (Num 3)]) (ConL [(Num 1), (Num 2)])) []
+
+t1 = do
+	 x <- interp (Var "me") ["me", (Num 21)]
+	 interp (Cat (ConL [x, (Num 3)]) (ConL [(Num 1), (Num 20)]))
+
+
+
+*CoreInterp> showST (apply (Fun (add (Num 5))) (Num 3)) 0
+(8,1)
+*CoreInterp> showST (interp (Cat (ConS "Hello, ") (ConS "World!")) []) 0
+("Hello, World!",1)
+*CoreInterp> showST (interp (Cat (ConL [(Num 5), (Num 3)]) (ConL [(Num 1), (Num 2)])) []) 9
+([5,3,1,2],10)
+*CoreInterp> showST (interp (Var "me") [("me", (Num 21))]) 6
+(21,6)

@@ -1,8 +1,6 @@
 module CoreInterp where
 
 import StateMonad
---import ErrorMonad
---import PositionMonad
 
 type Name = String
 
@@ -15,13 +13,12 @@ data Term = Var Name
 		  | Cat Term Term
 		  | Lam Name Term
 		  | App Term Term
---		  | At Position Term
 
 data Value = Num Int
 		   | Str String
 		   | Ch Char
 		   | List [Value]
-		   | Fun (Value -> ST Value) -- should eventually be like V -> m V
+		   | Fun (Value -> ST Value)
 
 instance Show Value where
 	show (Num n) = show n
@@ -53,23 +50,17 @@ interp (Cat u v) e = do
 					 cat s1 s2
 
 look_up :: Name -> Environment -> ST Value
---look_up x [] = errorE ("variable not in scope: " ++ x)
 look_up x ((y,b):e) = if x == y
 					  then return b
 					  else look_up x e
 
 add :: Value -> Value -> ST Value
 add (Num i) (Num j) = return (Num (i + j)) >>= tickS
---add a b = errorE ("should be numbers: " ++ show a ++ ", " ++ show b)
 
 apply :: Value -> Value -> ST Value
 apply (Fun k) a = k a
---apply f a = errorE ("should be function: " ++ show f)
 
 cat :: Value -> Value -> ST Value
 cat (Str s1) (Str s2) = return (Str (s1 ++ s2)) >>= tickS
 cat (List l1) (List l2) = return (List (l1 ++ l2)) >>= tickS
---cat a b = errorE ("should either be both strings or both lists: " ++ show a ++ ", " ++ show b)
-
-tickS val = St(\s -> (val, s + 1))
 

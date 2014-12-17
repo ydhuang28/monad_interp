@@ -71,3 +71,6 @@ cat (Str s1) (Str s2) = return (Str (s1 ++ s2))
 cat (List l1) (List l2) = return (List (l1 ++ l2))
 cat a b = errorE ("should either be both strings or both lists: " ++ show a ++ ", " ++ show b)
 
+t1 = do
+	 x <- interp (Var "me") [("me", (Num 21))]
+	 interp (Cat (ConL [x, (Num 3)]) (ConL [(Num 1), (Num 20)])) []

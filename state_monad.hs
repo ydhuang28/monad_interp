@@ -17,4 +17,6 @@ instance Monad ST where
 --	show (St(f)) = showST 
 showST (St(t)) x = t x
 
+tickS val = St(\s -> (val, s + 1))
+
 fetchS = St(\s -> (s, s))
