@@ -13,4 +13,8 @@ instance Monad ST where
 		let St(h) = g b in
 			h s0)
 
+--instance Show ST where
+--	show (St(f)) = showST 
 showST (St(t)) x = t x
+
+fetchS = St(\s -> (s, s))
