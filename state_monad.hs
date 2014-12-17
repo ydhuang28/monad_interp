@@ -1,6 +1,6 @@
 module StateMonad where
 type State = Integer
-data ST a = St(State -> (a, State))
+data ST a = St (State -> (a, State))
 
 instance Functor ST where
 	fmap f (St g) = St ((help f).g)

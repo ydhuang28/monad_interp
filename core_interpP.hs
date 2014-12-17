@@ -1,6 +1,7 @@
 module CoreInterp where
 
 import ErrorMonad
+import PositionMonad
 
 type Name = String
 
@@ -13,12 +14,13 @@ data Term = Var Name
 		  | Cat Term Term
 		  | Lam Name Term
 		  | App Term Term
+		  | At Position Term
 
 data Value = Num Int
 		   | Str String
 		   | Ch Char
 		   | List [Value]
-		   | Fun (Value -> E Value)
+		   | Fun (Value -> P Value)
 
 instance Show Value where
 	show (Num n) = show n
@@ -29,7 +31,7 @@ instance Show Value where
 
 type Environment = [(Name, Value)]
 
-interp :: Term -> Environment -> E Value
+interp :: Term -> Environment -> P Value
 interp (Var x) e = look_up x e
 interp (ConI i) e = return (Num i)
 interp (ConS s) e = return (Str s)
@@ -48,23 +50,24 @@ interp (Cat u v) e = do
 					 s1 <- interp u e
 					 s2 <- interp v e
 					 cat s1 s2
+interp (At p t) e = resetP p (interp t e)
 
-look_up :: Name -> Environment -> E Value
-look_up x [] = errorE ("variable not in scope: " ++ x)
+look_up :: Name -> Environment -> P Value
+look_up x [] = errorP ("variable not in scope: " ++ x)
 look_up x ((y,b):e) = if x == y
 					  then return b
 					  else look_up x e
 
-add :: Value -> Value -> E Value
+add :: Value -> Value -> P Value
 add (Num i) (Num j) = return (Num (i + j))
-add a b = errorE ("should be numbers: " ++ show a ++ ", " ++ show b)
+add a b = errorP ("should be numbers: " ++ show a ++ ", " ++ show b)
 
-apply :: Value -> Value -> E Value
+apply :: Value -> Value -> P Value
 apply (Fun k) a = k a
-apply f a = errorE ("should be function: " ++ show f)
+apply f a = errorP ("should be function: " ++ show f)
 
-cat :: Value -> Value -> E Value
+cat :: Value -> Value -> P Value
 cat (Str s1) (Str s2) = return (Str (s1 ++ s2))
 cat (List l1) (List l2) = return (List (l1 ++ l2))
-cat a b = errorE ("should either be both strings or both lists: " ++ show a ++ ", " ++ show b)
+cat a b = errorP ("should either be both strings or both lists: " ++ show a ++ ", " ++ show b)
 
